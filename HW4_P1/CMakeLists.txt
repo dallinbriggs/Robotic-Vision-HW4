@@ -1,4 +1,4 @@
-project(HW3_P2)
+project(HW4_P1)
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_CXX_STANDARD 11)
 aux_source_directory(. SRC_LIST)
@@ -11,4 +11,4 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 
 #add_executable( task_1 task_1.cpp )
-target_link_libraries(HW3_P2 ${OpenCV_LIBS} )
+target_link_libraries(HW4_P1 ${OpenCV_LIBS} )
