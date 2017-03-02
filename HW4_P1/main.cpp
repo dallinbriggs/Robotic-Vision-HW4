@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     vector<Point3f> perspective_left;
     vector<Point3f> perspective_right;
 
-    Mat R1, P1, Q;
+    Mat R1, P1, R2, P2, Q;
 
     Mat R, T, E, F;
 
@@ -114,6 +114,8 @@ int main(int argc, char *argv[])
     FileStorage fs_rectify("Rectification_baseball.xml", FileStorage::READ);
     fs_rectify["R1"] >> R1;
     fs_rectify["P1"] >> P1;
+    fs_rectify["R2"] >> R2;
+    fs_rectify["P2"] >> P2;
     fs_rectify["Q"] >> Q;
 
     bool corners_detected_left = findChessboardCorners(image_left,patternsize,corners_left);
@@ -151,7 +153,7 @@ int main(int argc, char *argv[])
         objectPoints_right.push_back(obj);
         //        drawChessboardCorners(image_color_right,patternsize,corners_right,corners_detected_right);
         corners_outer_right = {corners_right.at<Point2f>(0), corners_right.at<Point2f>(9),corners_right.at<Point2f>(60), corners_right.at<Point2f>(69)};
-        undistortPoints(corners_outer_right,corners_outer_right_rect,cameraMatrix_right,distCoeffs_right,R1,P1);
+        undistortPoints(corners_outer_right,corners_outer_right_rect,cameraMatrix_right,distCoeffs_right,R2,P2);
         circle(image_color_right,corners_outer_right[0],5,Scalar(0,0,255),2,LINE_8,0);
         circle(image_color_right,corners_outer_right[1],5,Scalar(0,0,255),2,LINE_8,0);
         circle(image_color_right,corners_outer_right[2],5,Scalar(0,0,255),2,LINE_8,0);
