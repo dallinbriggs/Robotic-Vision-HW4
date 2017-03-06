@@ -105,13 +105,13 @@ int main(int argc, char *argv[])
     image_right = imread(filename_right,CV_LOAD_IMAGE_GRAYSCALE);
     image_color_right = imread(filename_right,CV_LOAD_IMAGE_COLOR);
 
-    FileStorage fs_left("Intrinsic_calibration_baseball_left.xml", FileStorage::READ);
+    FileStorage fs_left("calib_left.yaml", FileStorage::READ);
     fs_left["CameraMatrix"] >> cameraMatrix_left;
     fs_left["DistortionCoefficients"] >> distCoeffs_left;
-    FileStorage fs_right("Intrinsic_calibration_baseball_right.xml", FileStorage::READ);
+    FileStorage fs_right("calib_right.yaml", FileStorage::READ);
     fs_right["CameraMatrix"] >> cameraMatrix_right;
     fs_right["DistortionCoefficients"] >> distCoeffs_right;
-    FileStorage fs_rectify("Rectification_baseball.xml", FileStorage::READ);
+    FileStorage fs_rectify("Rectification_baseball_2.xml", FileStorage::READ);
     fs_rectify["R1"] >> R1;
     fs_rectify["P1"] >> P1;
     fs_rectify["R2"] >> R2;
@@ -181,6 +181,16 @@ int main(int argc, char *argv[])
     perspectiveTransform(corners_diff_left,perspective_left,Q);
     perspectiveTransform(corners_diff_right,perspective_right,Q);
 
+    for(int i=0; i<4; i++)
+    {
+        putText(image_color_left,"Pt " + to_string(i) + ": " + "(" + to_string(perspective_left[i].x) + ", " + to_string(perspective_left[i].y)
+                + ", " + to_string(perspective_left[i].z) + ")" , Point(10,25*i + 30), CV_FONT_HERSHEY_COMPLEX, .5, Scalar(0,255,0),1,LINE_8, false);
+        putText(image_color_right,"Pt " + to_string(i) + ": " + "(" + to_string(perspective_right[i].x) + ", " + to_string(perspective_right[i].y)
+                + ", " + to_string(perspective_right[i].z) + ")" , Point(10,25*i + 30), CV_FONT_HERSHEY_COMPLEX, .5, Scalar(0,255,0),1,LINE_8, false);
+        putText(image_color_left, " " + to_string(i), corners_outer_left_rect[i], CV_FONT_HERSHEY_COMPLEX, .75, Scalar(0,255,0),2,LINE_8, false);
+        putText(image_color_right, " " + to_string(i), corners_outer_right_rect[i], CV_FONT_HERSHEY_COMPLEX, .75, Scalar(0,255,0),2,LINE_8, false);
+
+    }
     cout << perspective_left << endl;
     cout << perspective_right << endl;
 
@@ -188,6 +198,9 @@ int main(int argc, char *argv[])
     imshow("right", image_color_right);
     moveWindow("right",650,30);
 
+
+    imwrite("Left_Point.jpg", image_color_left);
+    imwrite("Right_Point.jpg", image_color_right);
 
     waitKey(0);
 

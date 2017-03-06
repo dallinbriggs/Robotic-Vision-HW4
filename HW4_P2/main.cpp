@@ -162,17 +162,6 @@ int main(int argc, char *argv[])
             circle(image_right_color,Point2f(x_right + width/2,y_right + height/2),5,Scalar(0,255,0),2,LINE_8,0);
         }
 
-//        if (keypoint_count > 24)
-//        {
-//            height = 100;
-//            width = 100;
-//        }
-
-
-        // Show blobs
-//        imshow("keypoints", im_with_keypoints );
-//        VOut << im_with_keypoints;
-        //        imshow("Briggs", frame_circles);
 
         rectangle(image_left_color,rectangle_left,Scalar(0,0,255),2,LINE_8,0);
         rectangle(image_right_color,rectangle_right,Scalar(0,0,255),2,LINE_8,0);
