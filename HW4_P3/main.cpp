@@ -13,10 +13,6 @@ int main(int argc, char *argv[])
     Mat image_right;
     Mat image_left_color;
     Mat image_right_color;
-    Mat current_frame_left;
-    Mat previous_frame_left;
-    Mat current_frame_right;
-    Mat previous_frame_right;
     Mat roi_first_left;
     Mat roi_first_right;
     Mat frame_thresh_left;
@@ -31,7 +27,6 @@ int main(int argc, char *argv[])
     Mat roi_previous_right;
     string filename_left;
     string filename_right;
-    string filename_write;
     string header;
     string tail;
     int x_left = 333;
@@ -42,7 +37,7 @@ int main(int argc, char *argv[])
     int height = 70;
     Rect rectangle_left = Rect(x_left,y_left,width,height);
     Rect rectangle_right = Rect(x_right,y_right,width,height);
-    int keypoint_count = 0;
+
 
     vector<Point3f> corners_diff_left;
     vector<Point3f> corners_diff_right;
@@ -53,60 +48,17 @@ int main(int argc, char *argv[])
     vector<Point2f> point_left, point_right;
 
     Mat R1, P1, R2, P2, Q;
-    Mat R, T, E, F;
     Mat distCoeffs_left;
     Mat distCoeffs_right;
     Mat cameraMatrix_left;
     Mat cameraMatrix_right;
-    Mat fundamental_matrix;
+
 
     vector<vector<Point> > contours_left;
     vector<vector<Point> > contours_right;
     vector<Vec4i> hierarchy_left;
     vector<Vec4i> hierarchy_right;
 
-
-    // Setup SimpleBlobDetector parameters.
-    SimpleBlobDetector::Params params;
-
-    // Change thresholds
-    params.minThreshold = 10;
-    params.maxThreshold = 255;
-
-    // Filter by Area.
-    params.filterByArea = true;
-    params.minArea = 100;
-
-    // Filter by Circularity
-    params.filterByCircularity = true;
-    params.minCircularity = 0.1;
-
-    // Filter by Convexity
-    params.filterByConvexity = true;
-    params.minConvexity = 0.87;
-
-    // Filter by Inertia
-    params.filterByInertia = true;
-    params.minInertiaRatio = .3;
-
-#if CV_MAJOR_VERSION < 3   // If you are using OpenCV 2
-
-    // Set up detector with params
-    SimpleBlobDetector detector(params);
-
-    // You can use the detector this way
-    // detector.detect( im, keypoints);
-
-#else
-
-    // Set up detector with params
-    Ptr<SimpleBlobDetector> blobby = SimpleBlobDetector::create(params);
-
-    // SimpleBlobDetector::create creates a smart pointer.
-    // So you need to use arrow ( ->) instead of dot ( . )
-    // detector->detect( im, keypoints);
-
-#endif
 
     header = "/home/dallin/robotic_vision/HW4/ImagesDallin/Ball_test";
     tail = ".bmp";
@@ -146,13 +98,6 @@ int main(int argc, char *argv[])
         threshold(motion_left, frame_thresh_left,4,255,1);
         threshold(motion_right, frame_thresh_right,4,255,1);
 
-
-        //        // Detect blobs.
-//        std::vector<KeyPoint> keypoints_left;
-//        std::vector<KeyPoint> keypoints_right;
-        //        blobby->detect(frame_thresh_left, keypoints_left);
-        //        blobby->detect(frame_thresh_right, keypoints_right);
-
         findContours(frame_thresh_left,contours_left,hierarchy_left, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
         findContours(frame_thresh_right,contours_right,hierarchy_right, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
 //        drawContours(frame_thresh_left,contours_left,0,Scalar(255,255,255),2,LINE_8,hierarchy_left,0x7fffffff,Point(0,0));
@@ -172,27 +117,11 @@ int main(int argc, char *argv[])
         { mc_right[i] = Point2f( contour_moments_right[i].m10/contour_moments_right[i].m00 , contour_moments_right[i].m01/contour_moments_right[i].m00 ); }
 
 
-//        for(int i=0; i<contours_left.size(); i++)
-//        {
-//            circle(frame_thresh_left,mc_left[i],8,Scalar(255,255,255),2,LINE_8,0);
-//        }
-//        for(int i=0; i<contours_right.size(); i++)
-//        {
-//            circle(current_frame_right,mc_right[i],8,Scalar(255,255,255),2,LINE_8,0);
-//        }
-
-        //        // Draw detected blobs as red circles.
-        //        // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
-
-        //        drawKeypoints(image_left, keypoints_left, im_with_keypoints, Scalar(0,0,255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
-
         if (!contours_left.empty())
         {
             x_left = (int)mc_left[1].x + x_left - width/2;
             y_left = (int)mc_left[1].y + y_left - height/2;
             rectangle_left = Rect(x_left,y_left,width,height);
-            //            cout << x_left << " " << y_left << endl;
-            //            keypoint_count = keypoint_count +1;
             circle(image_left_color,Point2f(x_left + width/2,y_left + height/2),5,Scalar(0,255,0),2,LINE_8,0);
 
         }
@@ -201,8 +130,6 @@ int main(int argc, char *argv[])
             x_right = (int)mc_right[1].x + x_right - width/2;
             y_right = (int)mc_right[1].y + y_right - height/2;
             rectangle_right = Rect(x_right,y_right,width,height);
-            //            cout << x_right << " " << y_right << endl;
-//            keypoint_count = keypoint_count +1;
             circle(image_right_color,Point2f(x_right + width/2,y_right + height/2),5,Scalar(0,255,0),2,LINE_8,0);
         }
 
@@ -211,10 +138,6 @@ int main(int argc, char *argv[])
         imshow("Left", image_left_color);
         imshow("right", image_right_color);
         moveWindow("right",643,23);
-
-        //        cout << "Keypoints: " << keypoint_count << endl;
-
-//        cout << "Contours: " << contours_left.size() << endl;
 
         FileStorage fs_left("calib_left.yaml", FileStorage::READ);
         fs_left["CameraMatrix"] >> cameraMatrix_left;
@@ -245,7 +168,6 @@ int main(int argc, char *argv[])
 
             perspectiveTransform(corners_diff_left,perspective_left,Q);
             perspectiveTransform(corners_diff_right,perspective_right,Q);
-//            cout << perspective_left << endl;
             ball_left.push_back(Point3f(perspective_left[0].x, perspective_left[0].y, perspective_left[0].z));
             ball_right.push_back(Point3f(perspective_right[0].x, perspective_right[0].y, perspective_right[0].z));
         }
