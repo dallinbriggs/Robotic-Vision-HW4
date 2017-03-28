@@ -100,7 +100,8 @@ int main(int argc, char *argv[])
 
         findContours(frame_thresh_left,contours_left,hierarchy_left, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
         findContours(frame_thresh_right,contours_right,hierarchy_right, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
-//        drawContours(frame_thresh_left,contours_left,0,Scalar(255,255,255),2,LINE_8,hierarchy_left,0x7fffffff,Point(0,0));
+        drawContours(frame_thresh_left,contours_left,0,Scalar(200,200,200),2,LINE_8,hierarchy_left,0x7fffffff,Point(0,0));
+        imshow("Thresh", frame_thresh_left);
         vector<Moments> contour_moments_left(contours_left.size());
         vector<Moments> contour_moments_right(contours_right.size());
         for( int i = 0; i < contours_left.size(); i++ )
@@ -136,8 +137,8 @@ int main(int argc, char *argv[])
         rectangle(image_left_color,rectangle_left,Scalar(0,0,255),2,LINE_8,0);
         rectangle(image_right_color,rectangle_right,Scalar(0,0,255),2,LINE_8,0);
         imshow("Left", image_left_color);
-        imshow("right", image_right_color);
-        moveWindow("right",643,23);
+//        imshow("right", image_right_color);
+//        moveWindow("right",643,23);
 
         FileStorage fs_left("calib_left.yaml", FileStorage::READ);
         fs_left["CameraMatrix"] >> cameraMatrix_left;
@@ -171,7 +172,7 @@ int main(int argc, char *argv[])
             ball_left.push_back(Point3f(perspective_left[0].x, perspective_left[0].y, perspective_left[0].z));
             ball_right.push_back(Point3f(perspective_right[0].x, perspective_right[0].y, perspective_right[0].z));
         }
-        waitKey(1);
+        waitKey(500);
 
 
     }
@@ -180,7 +181,7 @@ int main(int argc, char *argv[])
     fs_perspective << "ball_left" << perspective_left;
 
     fs_perspective << "ball_right" << perspective_right;
-    cout << perspective_right << endl;
+    cout << perspective_left << endl;
 
     waitKey(0);
     return 0;
